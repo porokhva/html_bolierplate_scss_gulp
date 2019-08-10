@@ -6,9 +6,12 @@
     "normalize.css": "^8.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "babel-preset-es2015": "^6.24.1",
     "browser-sync": "^2.26.7",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^6.1.0",
+    "gulp-babel": "^8.0.0",
     "gulp-group-css-media-queries": "^1.2.2",
     "gulp-imagemin": "^6.0.0",
     "gulp-minify-css": "^1.2.4",

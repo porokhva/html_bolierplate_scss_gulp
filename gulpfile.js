@@ -3,6 +3,7 @@
 let gulp = require('gulp'),
     watch = require('gulp-watch'),
     prefixer = require('gulp-autoprefixer'),
+    babel = require('gulp-babel'),
     uglify = require('gulp-uglify'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
@@ -71,6 +72,7 @@ gulp.task('js:build', () => {
         .pipe(rigger()) 
         .pipe(sourcemaps.init()) 
         .pipe(uglify()) 
+        .pipe(babel()) 
         .pipe(sourcemaps.write()) 
         .pipe(gulp.dest(path.build.js))
         .pipe(reload({stream: true}));
