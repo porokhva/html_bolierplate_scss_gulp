@@ -3,7 +3,8 @@
 let gulp = require('gulp'),
     watch = require('gulp-watch'),
     prefixer = require('gulp-autoprefixer'),
-    babel = require('gulp-babel'),
+    babel = require("gulp-babel"),
+    concat = require("gulp-concat"),
     uglify = require('gulp-uglify'),
     sass = require('gulp-sass'),
     sourcemaps = require('gulp-sourcemaps'),
@@ -27,7 +28,7 @@ let path = {
     },
     src: {
         html: 'src/*.html',
-        js: 'src/js/main.js',
+        js: 'src/js/*.js',
         style: 'src/style/main.scss',
         img: 'src/img/**/*.*',
         fonts: 'src/fonts/**/*.*'
@@ -70,9 +71,10 @@ gulp.task('html:build', () => {
 gulp.task('js:build', () => {
     gulp.src(path.src.js, { allowEmpty: true }) 
         .pipe(rigger()) 
-        .pipe(sourcemaps.init()) 
+        .pipe(sourcemaps.init())
+        .pipe(babel())
+        .pipe(concat('main.js'))
         .pipe(uglify()) 
-        .pipe(babel()) 
         .pipe(sourcemaps.write()) 
         .pipe(gulp.dest(path.build.js))
         .pipe(reload({stream: true}));
