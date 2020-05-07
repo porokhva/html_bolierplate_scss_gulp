@@ -19,7 +19,6 @@ let gulp = require('gulp'),
     grid = require("smart-grid"),
     reload = browserSync.reload;
 
-
 /* It's principal settings in smart grid project */
 var settings = {
     outputStyle: 'scss', /* less || scss || sass || styl */
@@ -27,12 +26,12 @@ var settings = {
     offset: '30px', /* gutter width px || % || rem */
     mobileFirst: false, /* mobileFirst ? 'min-width' : 'max-width' */
     container: {
-        maxWidth: '1440px', /* max-width оn very large screen */
+        maxWidth: '1600px', /* max-width оn very large screen */
         fields: '30px' /* side fields */
     },
     breakPoints: {
         lg: {
-            width: '1100px', /* -> @media (max-width: 1100px) */
+            width: '1440px', /* -> @media (max-width: 1100px) */
         },
         md: {
             width: '960px'
@@ -42,17 +41,9 @@ var settings = {
             fields: '15px' /* set fields only if you want to change container.fields */
         },
         xs: {
-            width: '560px'
+            width: '560px',
+            fields: '15px'
         }
-        /* 
-        We can create any quantity of break points.
-
-        some_name: {
-            width: 'Npx',
-            fields: 'N(px|%|rem)',
-            offset: 'N(px|%|rem)'
-        }
-        */
     }
 };
 //Smartgrid output path
@@ -102,26 +93,26 @@ gulp.task('clean', (cb) => {
 });
 
 gulp.task('html:build', () => {
-    gulp.src(path.src.html, { allowEmpty: true }) 
+    gulp.src(path.src.html, { allowEmpty: true })
         .pipe(rigger())
         .pipe(gulp.dest(path.build.html))
-        .pipe(reload({stream: true}));
+        .pipe(reload({ stream: true }));
 });
 
 gulp.task('js:build', () => {
-    gulp.src(path.src.js, { allowEmpty: true }) 
-        .pipe(rigger()) 
+    gulp.src(path.src.js, { allowEmpty: true })
+        .pipe(rigger())
         .pipe(sourcemaps.init())
         .pipe(babel())
         .pipe(concat('main.js'))
-        .pipe(uglify()) 
-        .pipe(sourcemaps.write()) 
+        .pipe(uglify())
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest(path.build.js))
-        .pipe(reload({stream: true}));
+        .pipe(reload({ stream: true }));
 });
 
 gulp.task('style:build', () => {
-    gulp.src(path.src.style) 
+    gulp.src(path.src.style)
         .pipe(sourcemaps.init())
         .pipe(sass({
             sourceMap: true,
@@ -133,27 +124,26 @@ gulp.task('style:build', () => {
         .pipe(cssmin())
         .pipe(sourcemaps.write())
         .pipe(gulp.dest(path.build.css))
-        .pipe(reload({stream: true}))
-        
-    });
+        .pipe(reload({ stream: true }))
+
+});
 
 gulp.task('image:build', () => {
-    gulp.src(path.src.img, { allowEmpty: true }) 
+    gulp.src(path.src.img, { allowEmpty: true })
         .pipe(imagemin([
-            
             pngquant(),
             recompress({
-              loops: 4,
-              min: 70,
-              max: 80,
-              quality: 'high'
+                loops: 4,
+                min: 70,
+                max: 80,
+                quality: 'high'
             }),
             imagemin.gifsicle(),
             imagemin.optipng(),
             imagemin.svgo()
-          ]))
+        ]))
         .pipe(gulp.dest(path.build.img))
-        .pipe(reload({stream: true}));
+        .pipe(reload({ stream: true }));
 });
 
 gulp.task('fonts:build', () => {
@@ -167,8 +157,7 @@ gulp.task('build', gulp.parallel(
     'style:build',
     'fonts:build',
     'image:build'
-    ));
-
+));
 
 gulp.task('watch', () => {
     watch(path.watch.html, gulp.parallel("html:build"));
@@ -177,6 +166,5 @@ gulp.task('watch', () => {
     watch(path.watch.img, gulp.parallel("image:build"));
     watch(path.watch.fonts, gulp.parallel("fonts:build"));
 });
-
 
 gulp.task('default', gulp.parallel('build', 'webserver', 'watch'));

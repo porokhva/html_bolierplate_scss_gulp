@@ -1,3 +1,68 @@
-@import "fontface"
+@import "fontface";
 
 // @include font-face("Myfont", "url/to/my/font/fontfile", 700,italic, "oldie");
+$default_font: '"Myfont", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"';
+.text-h1 {
+    @include px-to-rem(40);
+    line-height: 1.25;
+    @media screen and (max-width: 1000px){
+      @include px-to-rem(28);
+      
+    }
+}
+
+.text-h2 {
+    @include px-to-rem(36);
+    line-height: 1.64;
+}
+.text-h3 {
+    @include px-to-rem(32);
+    line-height: 22px;
+}
+.text-h4 {
+    @include px-to-rem(28);
+    line-height: 18px;
+}
+.text-h5 {
+    @include px-to-rem(24);
+    line-height: 18px;
+}
+.text-h6 {
+    @include px-to-rem(20);
+    line-height: 18px;
+}
+
+.text-lg {
+    @include px-to-rem(20);
+    line-height: 14px;
+}
+.text-md {
+    @include px-to-rem(18);
+    line-height: 14px;
+}
+.text-reg {
+    @include px-to-rem(16);
+    line-height: 14px;
+}
+.text-sm {
+    @include px-to-rem(14);
+    line-height: 14px;
+}
+.text-xs {
+    @include px-to-rem(14);
+    line-height: 14px;
+}
+
+.leading_26 {
+    line-height: 26px;
+}
+.fw_bold {
+    font-weight: 600;
+}
+.fw_normal {
+    font-weight: 400;
+}
+.fw_light {
+    font-weight: 300;
+}
+  
