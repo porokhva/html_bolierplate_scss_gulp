@@ -4,6 +4,7 @@ let gulp = require('gulp'),
     watch = require('gulp-watch'),
     prefixer = require('gulp-autoprefixer'),
     babel = require("gulp-babel"),
+    del = require('del'),
     concat = require("gulp-concat"),
     uglify = require('gulp-uglify'),
     sass = require('gulp-sass'),
@@ -17,6 +18,8 @@ let gulp = require('gulp'),
     rimraf = require('rimraf'),
     browserSync = require("browser-sync"),
     grid = require("smart-grid"),
+    rev = require('gulp-rev'),
+    revReplace = require('gulp-rev-replace'),
     reload = browserSync.reload;
 
 /* It's principal settings in smart grid project */
@@ -52,10 +55,10 @@ grid('./src/style/utils', settings);
 let path = {
     build: {
         html: 'build/',
-        js: 'build/js/',
-        css: 'build/css/',
-        img: 'build/img/',
-        fonts: 'build/fonts/'
+        js: 'build/static/js/',
+        css: 'build/static/css/',
+        img: 'build/static/img/',
+        fonts: 'build/static/fonts/'
     },
     src: {
         html: 'src/*.html',
@@ -80,7 +83,7 @@ let config = {
     },
     // tunnel: true,
     host: 'localhost',
-    port: 8080,
+    port: 3001,
     logPrefix: "frontend"
 };
 
@@ -88,19 +91,22 @@ gulp.task('webserver', () => {
     browserSync(config);
 });
 
-gulp.task('clean', (cb) => {
-    rimraf(path.clean, cb);
+
+
+gulp.task('clean', function (cb) {
+    del.sync(['./build']);
+    cb()
 });
 
 gulp.task('html:build', () => {
-    gulp.src(path.src.html, { allowEmpty: true })
+    return gulp.src(path.src.html, { allowEmpty: true })
         .pipe(rigger())
         .pipe(gulp.dest(path.build.html))
         .pipe(reload({ stream: true }));
 });
 
 gulp.task('js:build', () => {
-    gulp.src(path.src.js, { allowEmpty: true })
+    return gulp.src(path.src.js, { allowEmpty: true })
         .pipe(rigger())
         .pipe(sourcemaps.init())
         .pipe(babel())
@@ -112,7 +118,7 @@ gulp.task('js:build', () => {
 });
 
 gulp.task('style:build', () => {
-    gulp.src(path.src.style)
+    return gulp.src(path.src.style)
         .pipe(sourcemaps.init())
         .pipe(sass({
             sourceMap: true,
@@ -129,7 +135,7 @@ gulp.task('style:build', () => {
 });
 
 gulp.task('image:build', () => {
-    gulp.src(path.src.img, { allowEmpty: true })
+    return gulp.src(path.src.img, { allowEmpty: true })
         .pipe(imagemin([
             pngquant(),
             recompress({
@@ -147,16 +153,46 @@ gulp.task('image:build', () => {
 });
 
 gulp.task('fonts:build', () => {
-    gulp.src(path.src.fonts, { allowEmpty: true })
+    return gulp.src(path.src.fonts, { allowEmpty: true })
         .pipe(gulp.dest(path.build.fonts))
 });
-
-gulp.task('build', gulp.parallel(
+gulp.task('revision', () => {
+    return gulp
+        .src(['./build/static/**/*.css', './build/static/**/*.js'])
+        .pipe(rev())
+        .pipe(gulp.dest('./build/static'))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest('./build/static'))
+})
+gulp.task('revisionReplace', () => {
+    var manifest = gulp.src('./build/static/rev-manifest.json')
+    return gulp
+        .src('./build/*.html')
+        .pipe(revReplace({ manifest: manifest }))
+        .pipe(gulp.dest('./build'))
+})
+gulp.task('build', gulp.series(
+    'clean',
     'html:build',
     'js:build',
     'style:build',
     'fonts:build',
-    'image:build'
+    'image:build',
+    'revision',
+    'revisionReplace'
+
+)
+)
+
+gulp.task('dev', gulp.series(
+    'clean',
+    gulp.parallel(
+        'html:build',
+        'js:build',
+        'style:build',
+        'fonts:build',
+        'image:build'
+    )
 ));
 
 gulp.task('watch', () => {
@@ -167,4 +203,4 @@ gulp.task('watch', () => {
     watch(path.watch.fonts, gulp.parallel("fonts:build"));
 });
 
-gulp.task('default', gulp.parallel('build', 'webserver', 'watch'));
+gulp.task('default', gulp.parallel('dev', 'webserver', 'watch'));
